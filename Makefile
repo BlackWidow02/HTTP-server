@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -I./inc
+CFLAGS = -Wall -Wextra -I./include
 
 # 1. Update the list of source files to include src/main.c
 SRC = src/tcp.c src/main.c
