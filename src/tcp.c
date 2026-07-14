@@ -1,6 +1,7 @@
 #include "tcp.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
@@ -12,6 +13,7 @@ server_status_e bind_tcp_port(tcp_server *server, int port){
     //type is SOCK_STREAM
     //protocal is 0
     memset(server, 0, sizeof(*server)); //zero out all fields first
+    server->socket_fd = -1;
     
     //edge case for port OOB
     if(port < 1 || port > 65535){
