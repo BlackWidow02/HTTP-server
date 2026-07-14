@@ -14,7 +14,6 @@ server_status_e bind_tcp_port(tcp_server *server, int port){
 
     //edge case for port OOB
     if(port < 1024 || port > 65535){
-        perror("Invalid port number\n");
         return SERVER_BIND_ERROR;
     }
 
