@@ -14,8 +14,8 @@ server_status_e bind_tcp_port(tcp_server *server, int port){
 
     //edge case for port OOB
     if(port < 1024 || port > 65535){
-        printf("Invalid port number\n");
-        return SERVER_SOCKET_ERROR;
+        perror("Invalid port number\n");
+        return SERVER_BIND_ERROR;
     }
 
     server->socket_fd = socket(AF_INET, SOCK_STREAM, 0);
