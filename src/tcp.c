@@ -16,7 +16,7 @@ server_status_e bind_tcp_port(tcp_server *server, int port){
     server->socket_fd = -1;
     
     //edge case for port OOB
-    if(port < 1 || port > 65535){
+    if(port < 0 || port > 65535){
         return SERVER_BIND_ERROR;
     }
     
@@ -47,6 +47,8 @@ server_status_e bind_tcp_port(tcp_server *server, int port){
     int socket_listen = listen(server->socket_fd, 5);
     if(socket_listen == -1){
         perror("listening on socket failed!\n");
+        close(server->socket_fd); 
+        server->socket_fd = -1; 
         return SERVER_LISTEN_ERROR;
     }
 
