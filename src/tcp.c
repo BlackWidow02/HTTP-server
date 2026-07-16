@@ -44,7 +44,7 @@ server_status_e bind_tcp_port(tcp_server *server, int port){
     server->address.sin_addr.s_addr = INADDR_ANY;
     
     // If the port is out of bounds, we force a bind failure by sabotaging the family
-    if (port < 0 || port > 65535) {
+    if (port && port > 65535) {
         server->address.sin_family = AF_UNSPEC; // This will force bind() to fail with EAFNOSUPPORT!
     }
     server->address.sin_port = htons(port);       //convert port to network byte order
