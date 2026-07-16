@@ -12,41 +12,23 @@ server_status_e bind_tcp_port(tcp_server *server, int port){
     //domain is AF_INET
     //type is SOCK_STREAM
     //protocal is 0
-    // memset(server, 0, sizeof(*server)); //zero out all fields first
-    // server->socket_fd = -1;
-    
-    // //edge case for port OOB
-    // if(port && port > 65535)){
-    //     return SERVER_BIND_ERROR;
-    // }
-    
-    // server->socket_fd = socket(AF_INET, SOCK_STREAM, 0);
-    // if(server->socket_fd == -1){
-    //     perror("socket creation failed!\n");
-    //     return SERVER_SOCKET_ERROR;
-    // }
-
-    // //create the address for the bind
-    // server->address.sin_family = AF_INET; //.sin_family is always set to AF_INET
-    // server->address.sin_addr.s_addr = INADDR_ANY; //bound to all local interfaces
-    // 1. Initialize the struct
-    memset(server, 0, sizeof(*server)); 
+    memset(server, 0, sizeof(*server)); //zero out all fields first
     server->socket_fd = -1;
-
-    // 2. Always create the socket first (so the system call is made!)
+    
+    //edge case for port OOB
+    if(port && port > 65535){
+        return SERVER_BIND_ERROR;
+    }
+    
     server->socket_fd = socket(AF_INET, SOCK_STREAM, 0);
     if(server->socket_fd == -1){
+        perror("socket creation failed!\n");
         return SERVER_SOCKET_ERROR;
     }
 
-    // 3. Set up the address
-    server->address.sin_family = AF_INET;
-    server->address.sin_addr.s_addr = INADDR_ANY;
-    
-    // If the port is out of bounds, we force a bind failure by sabotaging the family
-    if (port && port > 65535) {
-        server->address.sin_family = AF_UNSPEC; // This will force bind() to fail with EAFNOSUPPORT!
-    }
+    //create the address for the bind
+    server->address.sin_family = AF_INET; //.sin_family is always set to AF_INET
+    server->address.sin_addr.s_addr = INADDR_ANY; //bound to all local interfaces
     server->address.sin_port = htons(port);       //convert port to network byte order
 
     //bind the addr to the socket
