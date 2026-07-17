@@ -19,7 +19,7 @@ server_status_e bind_tcp_port(tcp_server *server, int port){
 
     //edge case for port OOB
     if(port <= 0 || port > 65535){
-        return SERVER_BIND_ERROR;
+        return -1;
     }
 
     
