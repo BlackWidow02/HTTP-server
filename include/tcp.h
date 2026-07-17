@@ -6,11 +6,11 @@
 #include <unistd.h>
 
 typedef enum {
-    SERVER_OK = 0,
-    SERVER_SOCKET_ERROR = -1,
-    SERVER_BIND_ERROR = -1,
-    SERVER_LISTEN_ERROR = -1,
-    SERVER_ACCEPT_ERROR = -1
+    SERVER_OK,
+    SERVER_SOCKET_ERROR,
+    SERVER_BIND_ERROR,
+    SERVER_LISTEN_ERROR,
+    SERVER_ACCEPT_ERROR
 } server_status_e;
 
 typedef struct {
