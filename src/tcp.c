@@ -12,15 +12,7 @@ server_status_e bind_tcp_port(tcp_server *server, int port){
     //domain is AF_INET
     //type is SOCK_STREAM
     //protocal is 0
-    
-    //edge case for port OOB
-    if (port < 0) {
-        return SERVER_BIND_ERROR;
-    }
-
-    if (port > 65535) {
-        return SERVER_BIND_ERROR;
-    }
+   
 
     memset(server, 0, sizeof(*server)); //zero out all fields first
     server->socket_fd = -1;
@@ -29,6 +21,13 @@ server_status_e bind_tcp_port(tcp_server *server, int port){
     if(server->socket_fd == -1){
         perror("socket creation failed!\n");
         return SERVER_SOCKET_ERROR;
+    }
+
+    //edge case for port OOB
+    if (port < 0 || port > 65535) {
+        close(server->socket_fd);
+        server->socket_fd = -1;
+        return SERVER_BIND_ERROR;
     }
 
     //create the address for the bind
