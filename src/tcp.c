@@ -14,7 +14,11 @@ server_status_e bind_tcp_port(tcp_server *server, int port){
     //protocal is 0
     
     //edge case for port OOB
-    if (server == NULL || port < 0 || port > 65535) {
+    if (port < 0) {
+        return SERVER_BIND_ERROR;
+    }
+
+    if (port > 65535) {
         return SERVER_BIND_ERROR;
     }
 
