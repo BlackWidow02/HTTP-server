@@ -12,10 +12,15 @@ server_status_e bind_tcp_port(tcp_server *server, int port){
     //domain is AF_INET
     //type is SOCK_STREAM
     //protocal is 0
-   
 
-    memset(server, 0, sizeof(*server)); //zero out all fields first
+     memset(server, 0, sizeof(*server)); //zero out all fields first
     server->socket_fd = -1;
+
+    //edge case for port OOB
+    if(port < 1 || port > 65535){
+        return SERVER_BIND_ERROR;
+    }
+
     
     server->socket_fd = socket(AF_INET, SOCK_STREAM, 0);
     if(server->socket_fd == -1){
