@@ -23,17 +23,11 @@ server_status_e bind_tcp_port(tcp_server *server, int port){
         return SERVER_SOCKET_ERROR;
     }
 
-    //edge case for port OOB
-    if (port < 0 || port > 65535) {
-        close(server->socket_fd);
-        server->socket_fd = -1;
-        return SERVER_BIND_ERROR;
-    }
 
     //create the address for the bind
     server->address.sin_family = AF_INET; //.sin_family is always set to AF_INET
     server->address.sin_addr.s_addr = INADDR_ANY; //bound to all local interfaces
-    server->address.sin_port = htons(port);       //convert port to network byte order
+    server->address.sin_port = htons((uint16_t)port);       //convert port to network byte order
 
     //bind the addr to the socket
     //sockfd == file desciptor
