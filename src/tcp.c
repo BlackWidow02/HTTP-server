@@ -14,14 +14,13 @@ server_status_e bind_tcp_port(tcp_server *server, int port){
     //type is SOCK_STREAM
     //protocal is 0
 
-     memset(server, 0, sizeof(*server)); //zero out all fields first
-    server->socket_fd = -1;
-
     //edge case for port OOB
     if(port < 0 || port > 65535){
         return -1;
     }
 
+     memset(server, 0, sizeof(*server)); //zero out all fields first
+    server->socket_fd = -1;
     
     server->socket_fd = socket(AF_INET, SOCK_STREAM, 0);
     if(server->socket_fd == -1){
@@ -33,7 +32,7 @@ server_status_e bind_tcp_port(tcp_server *server, int port){
     //create the address for the bind
     server->address.sin_family = AF_INET; //.sin_family is always set to AF_INET
     server->address.sin_addr.s_addr = INADDR_ANY; //bound to all local interfaces
-    server->address.sin_port = htons((uint16_t)port);       //convert port to network byte order
+    server->address.sin_port = htons(port);       //convert port to network byte order
 
     //bind the addr to the socket
     //sockfd == file desciptor
