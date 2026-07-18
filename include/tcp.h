@@ -1,10 +1,9 @@
 #ifndef TCP_H
 #define TCP_H
 
-#include <sys/socket.h>
-#include <netinet/in.h>
-
-#define MAX_CONNECTIONS 8
+#include <arpa/inet.h>
+#include <string.h>
+#include <unistd.h>
 
 typedef enum {
     SERVER_OK,
@@ -15,12 +14,11 @@ typedef enum {
 } server_status_e;
 
 typedef struct {
-    struct sockaddr_in address;
     int socket_fd;
+    struct sockaddr_in address;
 } tcp_server;
-
 
 server_status_e bind_tcp_port(tcp_server *server, int port);
 int accept_client(int server_fd);
 
-#endif
+#endif // TCP_H
