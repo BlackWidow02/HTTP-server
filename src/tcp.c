@@ -1,73 +1,53 @@
-#include "tcp.h"
-#include <stdlib.h>
 #include <stdio.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netinet/ip.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
+#include "tcp.h"
 
-server_status_e bind_tcp_port(tcp_server *server, int port){
-    //create a socket which will return a file descriptor
-    //domain is AF_INET
-    //type is SOCK_STREAM
-    //protocal is 0
-
-    //edge case for port OOB
-    if(port < 0 || port > 65535){
+server_status_e bind_tcp_port(tcp_server *server, int port) {
+    if (port < 0 || port > 65535) {
         return -1;
     }
 
-     memset(server, 0, sizeof(*server)); //zero out all fields first
-    server->socket_fd = -1;
+    memset(server, 0, sizeof(*server));
     
-    server->socket_fd = socket(AF_INET, SOCK_STREAM, 0);
-    if(server->socket_fd == -1){
-        perror("socket creation failed!\n");
+    if ((server->socket_fd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
+        perror("socket");
+        printf("Could not create socket\n");
         return SERVER_SOCKET_ERROR;
     }
 
+    server->address.sin_family = AF_INET;
+    server->address.sin_addr.s_addr = INADDR_ANY;
+    server->address.sin_port = htons(port);
 
-    //create the address for the bind
-    server->address.sin_family = AF_INET; //.sin_family is always set to AF_INET
-    server->address.sin_addr.s_addr = INADDR_ANY; //bound to all local interfaces
-    server->address.sin_port = htons(port);       //convert port to network byte order
-
-    //bind the addr to the socket
-    //sockfd == file desciptor
-    //server->address
-    int socket_bind = bind(server->socket_fd, (struct sockaddr *)&server->address, sizeof(server->address));
-    if(socket_bind == -1){
-        perror("binding to socket failed!\n");
-        close(server->socket_fd); //added this line
-        server->socket_fd = -1; //added this line
+    if (bind(server->socket_fd, (struct sockaddr*)&server->address, sizeof(server->address)) < 0) {
+        perror("bind");
+        close(server->socket_fd);
         return SERVER_BIND_ERROR;
     }
 
-    //listen
-    //
-    int socket_listen = listen(server->socket_fd, 5);
-    if(socket_listen == -1){
-        perror("listening on socket failed!\n");
-        close(server->socket_fd); 
-        server->socket_fd = -1; 
+    if (listen(server->socket_fd, MAX_CONNECTIONS) < 0) {
+        perror("listen");
+        close(server->socket_fd);
         return SERVER_LISTEN_ERROR;
     }
+
+    printf("Server listening\n");
 
     return SERVER_OK;
 }
 
-    //accept the connection
-    //int accept(int sockfd, struct sockaddr *_Nullable restrict addr,
-    //   socklen_t *_Nullable restrict addrlen);
-  int accept_client(int server_fd){
-        struct sockaddr_in client_address = {0}; //inialize output buffer to 0
-        socklen_t client_len = sizeof(client_address);
+int accept_client(int server_fd) {
+    struct sockaddr_in client_addr_in = {0};
+    socklen_t client_len = sizeof(client_addr_in);
 
-        int client_fd = accept(server_fd, (struct sockaddr *)&client_address, &client_len);
-        if (client_fd == -1) {
-            perror("accept failed!\n");
-            return -1;
-        }
-
-        return client_fd;
+    int client_fd = accept(server_fd, (struct sockaddr*)&client_addr_in, &client_len);
+    if (client_fd < 0) {
+        perror("accept");
+        return -1;
     }
+
+    return client_fd;
+}
